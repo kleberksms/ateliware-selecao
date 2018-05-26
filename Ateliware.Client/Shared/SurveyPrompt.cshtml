@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Blazor.Components
+<div class="alert alert-secondary mt-4" role="alert">
+    <i class="fab fa-microsoft"></i>
+    <strong>@Title</strong>
+
+    <span class="text-nowrap">
+        <a target="_blank" class="font-weight-bold" href="http://blog.stevensanderson.com/2018/02/06/blazor-intro/">
+            Introdução ao Blazor
+        </a>
+    </span>
+</div>
+
+@functions {
+    [Parameter]
+    string Title { get; set; } // Demonstrates how a parent component can supply parameters
+}

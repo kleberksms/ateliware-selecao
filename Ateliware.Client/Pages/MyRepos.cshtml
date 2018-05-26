@@ -1,0 +1,59 @@
+﻿@using Ateliware.Shared
+@using Ateliware.Shared.ViewModel
+@page "/my-repos"
+@inject HttpClient Http
+
+<h1>Repositorios Salvos</h1>
+
+<p>Repositórios adicionados na listagem principal</p>
+
+@if (_items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Url</th>
+                <th>Language</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in _items)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td><a href="@item.Url" title="go to @item.Name">repo</a></td>
+                <td>@item.Language</td>
+                <td><button onclick="@(() => Remove(item))"><i class="fas fa-trash-alt"></i></button></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@functions {
+    ItemViewModel[] _items;
+
+    protected override async Task OnInitAsync()
+    {
+        await RefreshData();
+    }
+
+    private async Task Remove(ItemViewModel item)
+    {
+        await Http.DeleteAsync($"/api/repositories/{item.Id}");
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        _items = await Http.GetJsonAsync<ItemViewModel[]>("/api/repositories");
+    }
+}

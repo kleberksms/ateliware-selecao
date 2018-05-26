@@ -1,0 +1,139 @@
+﻿@using Ateliware.Shared.Enums
+@using Ateliware.Shared.ViewModel
+@inject HttpClient Http
+
+<div class="col">
+    <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("javascript"))>Java Script</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("csharp"))>C#</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("java"))>Java</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("python"))>Python</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("php"))>PHP</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("elexir"))>Elexir</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("ruby"))>Ruby</a>
+        <a href="#" class="list-group-item list-group-item-action" onclick=@(async () => await GetRepository("clojure"))>Clojure</a>
+    </div>
+</div>
+<div class="col">
+    @if (_repositories == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <h3>Repositorios de @CurrentLanguage</h3>
+        <div class="table-responsive-sm">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Url</th>
+                        <th scope="col">More</th>
+                        <th scope="col">Add</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in _repositories.items)
+                    {
+                        <tr onmouseover="">
+                            <td>@item.name</td>
+                            <td class="text-center">
+                                <a href="@item.html_url" target="_blank" title="@item.full_name">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </td>
+                            <td class="text-center"><a href="#" title="info" onclick="@(() => ShouldRender(item))"><i class="far fa-eye"></i></a></td>
+                            <td class="text-center"><button  title="Add to my repos" onclick="@(() => Add(item))"><i class="far fa-plus-square"></i></button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+<div class="col">
+    @if (_currentItem != null)
+    {
+        <div class="row">
+            <div class="col">
+                <img class="img-thumbnail" src="@_currentItem.owner.avatar_url" alt="@_currentItem.owner.login"/>
+            </div>
+            <div class="col">
+                <p><strong>Owner:</strong> @_currentItem.owner.login</p>
+                <p><strong>Type:</strong> @_currentItem.owner.type</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <p><strong>Name:</strong>@_currentItem.name</p>
+                <p><strong>Description:</strong>@_currentItem.description</p>
+                <br/>
+                <p><strong><i class="fas fa-code-branch"></i></strong>@_currentItem.forks_count</p>
+                <p><strong><i class="fas fa-star"></i></strong>@_currentItem.stargazers_count</p>
+            </div>
+        </div>
+    }
+</div>
+
+
+@functions {
+    Repositories _repositories;
+    public string CurrentLanguage { get; set; }
+    Item _currentItem;
+
+    protected override async Task OnInitAsync()
+    {
+        await GetRepository("javascript");
+    }
+
+    private async Task GetRepository(string language)
+    {
+        _repositories = null;
+        _currentItem = null;
+        CurrentLanguage = language;
+        _repositories = await Http.GetJsonAsync<Repositories>($"https://api.github.com/search/repositories?q=language:{language}&sort=stars&order=desc&page=1&per_page=5");
+    }
+
+    private void ShouldRender(Item item)
+    {
+        _currentItem = item;
+    }
+
+    private async Task Add(Item item)
+    {
+        await Http.SendJsonAsync(HttpMethod.Post, "/api/Repositories", new ItemViewModel
+        {
+            Id = item.id,
+            Url = item.url,
+            Name =  item.name,
+            Language = GetLanguage()
+
+        });
+    }
+
+    private Language GetLanguage()
+    {
+        if (CurrentLanguage == Language.Clojure.ToString().ToLower())
+        {
+            return Language.Clojure;
+        }
+        if (CurrentLanguage == Language.Csharp.ToString().ToLower())
+        {
+            return Language.Csharp;
+        }
+        if (CurrentLanguage == Language.Elexir.ToString().ToLower())
+        {
+            return Language.Elexir;
+        }
+        if (CurrentLanguage == Language.Java.ToString().ToLower())
+        {
+            return Language.Java;
+        }
+        if (CurrentLanguage == Language.Php.ToString().ToLower())
+        {
+            return Language.Php;
+        }
+        return CurrentLanguage == Language.Python.ToString().ToLower() ? Language.Python : Language.Javascript;
+    }
+
+}
