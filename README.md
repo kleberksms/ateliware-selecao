@@ -7,8 +7,8 @@ Utilizei a possibilidade do projeto para colocar em prática  um modelo que acabo
 
 > **DotNetCore:** Utilizando a versão 2.1.300-preview2-008533
 > **Bootstrap 4.0**
->  **Blazor**
->  **Xunit**
+> **Blazor**
+> **Xunit**
 
 
 ## Ambiente
@@ -16,4 +16,7 @@ Utilizei a possibilidade do projeto para colocar em prática  um modelo que acabo
 
 
 ## Cloud
->  **Azure**
+> **Azure**
+
+### Todo
+> **UI:** Quando adiciona ou remove um item da lista, o mesmo não tem um efeito visual e num uma mensagem de ok, =(

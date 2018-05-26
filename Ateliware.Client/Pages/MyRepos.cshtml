@@ -16,7 +16,6 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Nome</th>
                 <th>Url</th>
                 <th>Language</th>
@@ -27,7 +26,6 @@ else
         @foreach (var item in _items)
         {
             <tr>
-                <td>@item.Id</td>
                 <td>@item.Name</td>
                 <td><a href="@item.Url" title="go to @item.Name">repo</a></td>
                 <td>@item.Language</td>
